@@ -4,13 +4,13 @@ const postRouter = express.Router()
 const postService = require('../services/postService')
 const createdPostValidator = require('../validators/createdPostValidator')
 
-// get all post
+// get all post with pagination
 postRouter.get('/', async (req, res) => {
     try{
         const posts = await postService.paginate(req)
         res.status(200).json(posts)
-    }catch (err) {
-        res.status(404).json({message: err})
+    }catch (error) {
+        res.status(404).json({message: error})
     }
 })
 
@@ -22,11 +22,11 @@ postRouter.get('/:id', async (req, res) => {
             return res.status(404).json({message: 'post not found'})
         }
         res.status(200).json(post)
-    }catch (err) {
-        if (err.kind === "ObjectId") {
+    }catch (error) {
+        if (error.kind === "ObjectId") {
             res.status(404).json({message: 'post not found'});
         }else{
-            res.status(404).json(err)
+            res.status(404).json(error)
         }
     }
 })
@@ -39,11 +39,11 @@ postRouter.delete('/:id', async (req, res) => {
             return res.status(404).json({message: 'post not found'})
         }
         res.json(removedPost)
-    }catch (err) {
-        if (err.kind === "ObjectId") {
+    }catch (error) {
+        if (error.kind === "ObjectId") {
             res.status(404).json({message: 'post not found'});
         }else{
-            res.status(404).json(err)
+            res.status(404).json(error)
         }
     }
 })
@@ -57,8 +57,8 @@ postRouter.post('', async (req, res) => {
     try {
         const createdPost = await postService.createdPost(req)
         res.status(201).json(createdPost)
-    }catch (err) {
-        res.status(404).json({message: err})
+    }catch (error) {
+        res.status(404).json({message: error})
     }
 })
 
@@ -70,15 +70,16 @@ postRouter.patch('/:id', async (req, res) => {
             return res.status(404).json({message: 'post not found'})
         }
         res.json(updatedPost)
-    }catch (err) {
-        if (err.kind === "ObjectId") {
+    }catch (error) {
+        if (error.kind === "ObjectId") {
             res.status(404).json({message: 'post not found'});
         }else{
-            res.status(404).json(err)
+            res.status(404).json(error)
         }
     }
 })
 
+// Storage images
 postRouter.post('/image',  (req, res) => {
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -91,11 +92,11 @@ postRouter.post('/image',  (req, res) => {
     })
     const upload = multer({ storage: storage}).array('avatar', 2)
 
-    upload(req, res, function(err) {
+    upload(req, res, function(error) {
         if (!req.files) {
             res.send('Please select an image to upload');
-        } else if (err instanceof multer.MulterError) {
-            res.send(err);
+        } else if (error instanceof multer.MulterError) {
+            res.send(error);
         }
     })
     res.send('create success')
