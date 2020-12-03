@@ -4,18 +4,31 @@ findUserById = (id) => {
     return userModel.findById(id)
 }
 
-paginate = (req) => {
+findOneUser = (req) => {
+    return userModel.findOne({ username: req.body.username, password: req.body.password })
+}
+
+paginate = async (req) => {
+    const paginate = {}
+    const totalUsers =  await userModel.countDocuments();
     const perPage = req.query.per_page || 5
     const page = req.query.page || 1
     const offset = perPage*page - perPage;
-    const condition = {}
+    const users = await userModel.find().skip(offset).limit(perPage)
     if(req.query.username){
-        condition.username = {
-            $regex: new RegExp(req.query.username),
-            $options: "i"
-        }
+        users.where('username', new RegExp(req.query.username, "i"))
     }
-    return userModel.paginate(condition, {offset: offset, limit: perPage})
+    if(req.query.age){
+        users.where('age', req.query.age)    
+    }
+    if(req.query.address){
+        users.where('address', new RegExp(req.query.address, "i"))
+    }
+
+    paginate.users = users
+    paginate.total = totalUsers
+    
+    return paginate
 }
 
 findUserByIdAndRemove = (id) => {
@@ -42,6 +55,7 @@ findUserByIdAndUpdate = (req) => {
 module.exports = {
     paginate: paginate,
     findUserById: findUserById,
+    findOneUser: findOneUser,
     findUserByIdAndRemove: findUserByIdAndRemove,
     createdUser: createdUser,
     findUserByIdAndUpdate: findUserByIdAndUpdate

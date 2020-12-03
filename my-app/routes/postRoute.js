@@ -7,8 +7,8 @@ const createdPostValidator = require('../validators/createdPostValidator')
 // get all post with pagination
 postRouter.get('/', async (req, res) => {
     try{
-        const posts = await postService.paginate(req)
-        res.status(200).json(posts)
+        const paginate = await postService.paginate(req)
+        res.status(200).json({message: 'success', data: paginate.posts, total: paginate.total})
     }catch (error) {
         res.status(404).json({message: error})
     }

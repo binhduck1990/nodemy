@@ -4,24 +4,22 @@ findPostById = (id) => {
     return postModel.findById(id)
 }
 
-paginate = (req) => {
+paginate = async (req) => {
+    const paginate = {}
+    const totalPost = await postModel.countDocuments()
     const perPage = req.query.per_page || 5
     const page = req.query.page || 1
     const offset = perPage*page - perPage;
-    const condition = {}
+    const posts = await postModel.find().skip(offset).limit(perPage)
     if(req.query.title){
-        condition.title = {
-            $regex: new RegExp(req.query.title),
-            $options: "i"
-        }
+        posts.where('title', new RegExp(req.query.title, "i"))
     }
     if(req.query.description){
-        condition.description = {
-            $regex: new RegExp(req.query.description),
-            $options: "i"
-        }
+        posts.where('description', new RegExp(req.query.description, "i"))
     }
-    return postModel.paginate(condition, {offset: offset, limit: perPage})
+    paginate.posts = posts
+    paginate.total = totalPost
+    return paginate
 }
 
 findPostByIdAndRemove = (id) => {

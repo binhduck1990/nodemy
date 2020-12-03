@@ -3,14 +3,33 @@ const express = require('express')
 const userRouter = express.Router()
 const userService = require('../services/userService')
 const createdUserValidator = require('../validators/createdUserValidator')
+const path = require('path');
 
 // get all user with pagination
 userRouter.get('/', async (req, res) => {
     try {
-        const users = await userService.paginate(req)
-        res.status(200).json({message: 'success', data: users})
+        const paginate = await userService.paginate(req)
+        res.status(200).json({message: 'success', data: paginate.users, total: paginate.total})
     } catch (error) {
         res.status(404).json({message: error})
+    }
+})
+
+// render login html
+userRouter.get('/login', async (req, res) => {
+    res.sendFile(path.join(__dirname, "../views/login.html"))
+})
+
+// handle form html
+userRouter.post('/login', async (req, res) => {
+    try {
+        const user = await userService.findOneUser(req)
+        if(!user){
+            return res.redirect('/api/user/login')
+        }
+        res.sendFile(path.join(__dirname, "../views/home.html"))     
+    } catch (error) {
+        res.redirect(path.join(__dirname, "../views/403.html"));
     }
 })
 
@@ -41,7 +60,7 @@ userRouter.delete('/:id', async (req, res) => {
 })
 
 // create a user
-userRouter.post('', async (req, res) => {
+userRouter.post('/', async (req, res) => {
     const validatedData = createdUserValidator.validate(req)
     if(Object.getOwnPropertyNames(validatedData).length !== 0){
         return res.status(404).json({message: validatedData})
