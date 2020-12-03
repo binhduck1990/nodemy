@@ -10,14 +10,15 @@ paginate = async (req) => {
     const perPage = req.query.per_page || 5
     const page = req.query.page || 1
     const offset = perPage*page - perPage;
-    const posts = await postModel.find().skip(offset).limit(perPage)
+    const posts = postModel.find({}).skip(offset).limit(perPage)
     if(req.query.title){
         posts.where('title', new RegExp(req.query.title, "i"))
     }
     if(req.query.description){
         posts.where('description', new RegExp(req.query.description, "i"))
     }
-    paginate.posts = posts
+
+    paginate.posts = await posts
     paginate.total = totalPost
     return paginate
 }

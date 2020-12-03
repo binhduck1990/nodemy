@@ -14,7 +14,7 @@ paginate = async (req) => {
     const perPage = req.query.per_page || 5
     const page = req.query.page || 1
     const offset = perPage*page - perPage;
-    const users = await userModel.find().skip(offset).limit(perPage)
+    const users = userModel.find().skip(offset).limit(perPage)
     if(req.query.username){
         users.where('username', new RegExp(req.query.username, "i"))
     }
@@ -25,7 +25,7 @@ paginate = async (req) => {
         users.where('address', new RegExp(req.query.address, "i"))
     }
 
-    paginate.users = users
+    paginate.users = await users
     paginate.total = totalUsers
     
     return paginate
