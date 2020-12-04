@@ -1,5 +1,4 @@
 const mongoose = require('../config/database')
-const mongoosePaginate = require('mongoose-paginate-v2')
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -28,7 +27,5 @@ const UserSchema = new mongoose.Schema({
 },{
     collection: 'user'
 })
-
-UserSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('user', UserSchema)
