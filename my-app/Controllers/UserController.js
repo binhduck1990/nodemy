@@ -1,40 +1,31 @@
-const { json } = require('body-parser')
-const express = require('express')
-const userRouter = express.Router()
-const userService = require('../services/userService')
-const createdUserValidator = require('../validators/createdUserValidator')
-const path = require('path');
+const userService = require('../Services/UserService')
+const createdUserValidator = require('../Validators/CreatedUserValidator')
 
-// get all user with pagination
-userRouter.get('/', async (req, res) => {
+// users paginate
+paginate = async (req, res) => {
     try {
         const paginate = await userService.paginate(req)
         res.status(200).json({message: 'success', data: paginate.users, total: paginate.total})
     } catch (error) {
         res.status(404).json({message: error})
     }
-})
+}
 
-// render login html
-userRouter.get('/login', async (req, res) => {
-    res.sendFile(path.join(__dirname, "../views/login.html"))
-})
-
-// handle form html
-userRouter.post('/login', async (req, res) => {
+// login
+login = async (req, res) => {
     try {
         const user = await userService.findOneUser(req)
         if(!user){
-            return res.redirect('/api/user/login')
+            return res.status(400).json({message: 'wrong user or password'})
         }
-        res.sendFile(path.join(__dirname, "../views/home.html"))     
+        res.status(200).json({message: 'success'})     
     } catch (error) {
-        res.redirect(path.join(__dirname, "../views/403.html"));
+        res.status(404).json({message: error});
     }
-})
+}
 
-// get a user detail
-userRouter.get('/:id', async (req, res) => {
+// get user detail
+show = async (req, res) => {
     try {
         const user = await userService.findUserById(req.params.id)
         if(!user){
@@ -44,10 +35,10 @@ userRouter.get('/:id', async (req, res) => {
     } catch (error) {
         res.status(404).json({message: error})
     }
-})
+}
 
-// delete a user
-userRouter.delete('/:id', async (req, res) => {
+// remove user
+destroy = async (req, res) => {
     try {
         const removedUser = userService.findUserByIdAndRemove(req.params.id)
         if(!removedUser){
@@ -57,10 +48,10 @@ userRouter.delete('/:id', async (req, res) => {
     } catch (error) {
         res.status(404).json({message: error})
     }
-})
+}
 
-// create a user
-userRouter.post('/', async (req, res) => {
+// create user
+create = async (req, res) => {
     const validatedData = createdUserValidator.validate(req)
     if(Object.getOwnPropertyNames(validatedData).length !== 0){
         return res.status(404).json({message: validatedData})
@@ -71,10 +62,10 @@ userRouter.post('/', async (req, res) => {
     }catch (error) {
         res.status(404).json({message: error})
     }
-})
+}
 
-// update a user
-userRouter.patch('/:id', async (req, res) => {
+// update user
+update = async (req, res) => {
     try{
         const updatedUser = await userService.findUserByIdAndUpdate(req)
         if(!updatedUser){
@@ -88,6 +79,13 @@ userRouter.patch('/:id', async (req, res) => {
             res.status(404).json(error)
         }
     }
-})
+}
 
-module.exports = userRouter
+module.exports = {
+    paginate: paginate,
+    login: login,
+    show: show,
+    destroy: destroy,
+    create: create,
+    update: update
+}

@@ -1,4 +1,4 @@
-const postModel = require("../models/post")
+const postModel = require("../Models/Post")
 
 findPostById = (id) => {
     return postModel.findById(id)

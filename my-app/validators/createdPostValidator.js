@@ -1,4 +1,4 @@
-const postModel = require('../models/post')
+const postModel = require('../Models/Post')
 
 validate = (req) => {
     const listError = {}
