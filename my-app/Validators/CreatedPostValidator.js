@@ -2,11 +2,12 @@ const postModel = require('../Models/Post')
 
 validate = (req) => {
     const listError = {}
+    const title = req.body.title
+    const description = req.body.description
     const post = new postModel({
-        title: req.body.title,
-        description: req.body.description
+        title: title,
+        description: description
     })
-
     const err = post.validateSync()
     if(!!err){
         Object.keys(err.errors).forEach((key) => {

@@ -1,11 +1,5 @@
 require('../Config/database')
 const express = require('express')
-const app = express()
-
-const bodyParser = require('body-parser')
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}))
-
 const Router = express.Router()
 const UserController = require('../Controllers/UserController');
 const PostController = require('../Controllers/PostController');

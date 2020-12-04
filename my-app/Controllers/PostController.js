@@ -40,11 +40,11 @@ destroy = async (req, res) => {
 
 // create post
 create = async (req, res) => {
-    const validatedData = createdPostValidator.validate(req)
-    if(Object.getOwnPropertyNames(validatedData).length !== 0){
-        return res.status(404).json({message: validatedData})
-    }
     try {
+        const validatedData = createdPostValidator.validate(req)
+        if(Object.getOwnPropertyNames(validatedData).length !== 0){
+            return res.status(404).json({message: validatedData})
+        }
         const createdPost = await postService.createdPost(req)
         res.status(201).json({message: 'success', data: createdPost})
     }catch (error) {
