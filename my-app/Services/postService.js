@@ -20,6 +20,7 @@ paginate = async (req) => {
 
     paginate.posts = await posts
     paginate.total = totalPost
+    
     return paginate
 }
 
