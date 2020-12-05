@@ -10,22 +10,23 @@ findOneUser = (req) => {
 
 paginate = async (req) => {
     const paginate = {}
-    const totalUsers =  await userModel.countDocuments();
     const perPage = req.query.per_page || 5
     const page = req.query.page || 1
     const offset = perPage*page - perPage;
-    const users = userModel.find().skip(offset).limit(perPage)
+    const userQuery = userModel.find().skip(offset).limit(perPage)
     if(req.query.username){
-        users.where('username', new RegExp(req.query.username, "i"))
+        userQuery.where('username', new RegExp(req.query.username, "i"))
     }
     if(req.query.age){
-        users.where('age', req.query.age)    
+        userQuery.where('age', req.query.age)    
     }
     if(req.query.address){
-        users.where('address', new RegExp(req.query.address, "i"))
+        userQuery.where('address', new RegExp(req.query.address, "i"))
     }
 
-    paginate.users = await users
+    const [users, totalUsers] = await Promise.all([userQuery.exec(), userModel.countDocuments().exec()])
+
+    paginate.users = users
     paginate.total = totalUsers
     
     return paginate
