@@ -1,5 +1,6 @@
 const { performance } = require('perf_hooks');
 const fetch = require('node-fetch');
+const e = require('express');
 
 testjs1 = () => {
     return new Promise((resolve) => {
@@ -46,9 +47,9 @@ const testPromise = async () => {
     return [test1, test2, test3]
   }
 
-  testPromise().then(data => {
-    console.log(data)
-  })
+  // testPromise().then(data => {
+  //   console.log(data)
+  // })
 
   const testApi = async () => {
     const timeStart = performance.now()
@@ -63,6 +64,31 @@ const testPromise = async () => {
     }
   }
 
-  testApi().then(data => {
-      console.log('123')
+  // testApi().then(data => {
+  //     console.log('123')
+  // })
+
+  const fetchApiUser = () => {
+    return fetch('http://localhost:3000/api/user')
+    .then(response => response.json())
+    .then(data => {
+      return data
+    })
+  }
+
+  const fetchApiPost = () => {
+    return fetch('http://localhost:3000/api/post')
+    .then(response => response.json())
+    .then(data => {
+      return data
+    })
+  }
+
+  const data = Promise.all([fetchApiUser(), fetchApiPost()]).then((value) => {
+    return {
+      users: value[0],
+      posts: value[1]
+    }
   })
+
+  data.then(value => console.log(value))
